@@ -4,15 +4,20 @@ FROM almalinux:latest
 # Copying all contents of rpmbuild repo inside container
 COPY . .
 
-# Installing tools needed for rpmbuild ,
-# depends on BuildRequires field in specfile, (TODO: take as input & install)
-RUN yum install -y rpm-build rpmdevtools gcc make python git nodejs yum-utils
+# Enable PowerTools/CRB for -devel packages (needed for hidapi-devel, systemd-devel)
+RUN dnf install -y dnf-plugins-core && \
+    (dnf config-manager --set-enabled crb || dnf config-manager --set-enabled powertools) && \
+    dnf install -y epel-release
 
-# Install dependecies and build main.js
-RUN npm install --production \
-&& npm run-script build
+# Install tools needed for rpmbuild, based on BuildRequires in .spec
+RUN dnf install -y \
+    rpm-build rpmdevtools gcc make python3 git nodejs yum-utils \
+    hidapi-devel systemd-devel && \
+    dnf clean all
 
-# All remaining logic goes inside main.js ,
-# where we have access to both tools of this container and
-# contents of git repo at /github/workspace
+# Install Node.js dependencies and build the project
+RUN npm install --production && \
+    npm run-script build
+
+# Set the default entrypoint
 ENTRYPOINT ["node", "/lib/main.js"]
