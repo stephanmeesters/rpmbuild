@@ -28,6 +28,8 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 # Add Rust to PATH
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+RUN rustup toolchain install stable-x86_64-unknown-linux-gnu
+
 # Create RPM build environment
 RUN rpmdev-setuptree
 
