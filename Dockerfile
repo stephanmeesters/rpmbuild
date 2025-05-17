@@ -18,6 +18,7 @@ RUN dnf -y update && \
         pkgconf-pkg-config \
         python3 \
         which \
+        npm \
         && dnf clean all
 
 # Install latest stable Rust using rustup
