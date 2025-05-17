@@ -7,6 +7,7 @@ COPY . .
 # Install required tools and development dependencies
 RUN dnf -y update && \
     dnf -y install \
+        dnf-plugins-core \
         rpm-build \
         rpmdevtools \
         gcc \
